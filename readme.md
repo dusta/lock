@@ -1,4 +1,4 @@
-# Lock - Acl for PHP 5.4+
+# Lock - Acl for PHP 5.6+
 
 [![Build Status](https://img.shields.io/travis/BeatSwitch/lock/master.svg?style=flat-square)](https://travis-ci.org/BeatSwitch/lock)
 [![Code Climate](https://codeclimate.com/github/BeatSwitch/lock/badges/gpa.svg)](https://codeclimate.com/github/BeatSwitch/lock)
@@ -8,10 +8,6 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/beatswitch/lock.svg?style=flat-square)](https://packagist.org/packages/beatswitch/lock)
 
 <img width="100%" src="https://s3.eu-central-1.amazonaws.com/assets.beatswitch.com/lock_banner.png">
-
-> I'm sad to say that Lock is currently not maintained. I won't be able to offer support or accept new contributions for the current time being. Other priorities are keeping me from putting the work into Lock that it deserves. Eventually I'll try to pick up work again but unfortunately I cannot say when. My thanks goes out to all the contributors and users.
->
-> -- Dries
 
 Lock is a flexible, driver based **Acl** package for **PHP 5.4+**.
 
