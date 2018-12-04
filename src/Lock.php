@@ -87,6 +87,8 @@ abstract class Lock
 
             $this->storePermission(new Privilege($action, $resource, $conditions));
         }
+        
+        return $this;
     }
 
     /**
