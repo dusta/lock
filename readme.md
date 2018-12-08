@@ -1,6 +1,6 @@
 # Lock - Acl for PHP 5.6+
 
-[![Build Status](https://img.shields.io/travis/BeatSwitch/lock/master.svg?style=flat-square)](https://travis-ci.org/BeatSwitch/lock)
+[![Build Status](https://img.shields.io/travis/BeatSwitch/lock/master.svg?style=flat-square)](https://travis-ci.org/dusta/lock)
 [![Code Climate](https://codeclimate.com/github/BeatSwitch/lock/badges/gpa.svg)](https://codeclimate.com/github/BeatSwitch/lock)
 [![Test Coverage](https://codeclimate.com/github/BeatSwitch/lock/badges/coverage.svg)](https://codeclimate.com/github/BeatSwitch/lock/coverage)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](license.md)
