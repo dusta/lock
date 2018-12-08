@@ -204,6 +204,8 @@ abstract class Lock
      * @param string|\BeatSwitch\Lock\Resources\Resource                                               $resource
      * @param int                                                                                      $resourceId
      * @param \BeatSwitch\Lock\Permissions\Condition|\BeatSwitch\Lock\Permissions\Condition[]|\Closure $conditions
+     *
+     * @return Lock
      */
     public function allow($action, $resource = null, $resourceId = null, $conditions = [])
     {

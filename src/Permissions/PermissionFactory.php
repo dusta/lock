@@ -59,8 +59,8 @@ class PermissionFactory
      *
      * @param object $permission
      *
-     * @return \BeatSwitch\Lock\Permissions\Permission[]
-     * @throws \BeatSwitch\Lock\Permissions\InvalidPermissionType
+     * @return Privilege|Restriction
+     * @throws InvalidPermissionType
      */
     public static function createFromObject($permission)
     {
