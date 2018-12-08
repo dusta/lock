@@ -1,4 +1,5 @@
 <?php
+
 namespace BeatSwitch\Lock\Permissions;
 
 use BeatSwitch\Lock\Lock;
@@ -15,14 +16,15 @@ class Restriction extends AbstractPermission implements Permission
     /**
      * Validate a permission against the given params
      *
-     * @param \BeatSwitch\Lock\Lock $lock
-     * @param string $action
+     * @param \BeatSwitch\Lock\Lock                    $lock
+     * @param string                                   $action
      * @param \BeatSwitch\Lock\Resources\Resource|null $resource
+     *
      * @return bool
      */
     public function isAllowed(Lock $lock, $action, Resource $resource = null)
     {
-        return ! $this->resolve($lock, $action, $resource);
+        return !$this->resolve($lock, $action, $resource);
     }
 
     /**

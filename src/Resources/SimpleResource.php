@@ -1,4 +1,5 @@
 <?php
+
 namespace BeatSwitch\Lock\Resources;
 
 final class SimpleResource implements Resource
@@ -14,7 +15,7 @@ final class SimpleResource implements Resource
     private $id;
 
     /**
-     * @param string $type
+     * @param string   $type
      * @param int|null $id
      */
     public function __construct($type, $id = null)

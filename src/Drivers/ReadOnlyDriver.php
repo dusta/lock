@@ -1,4 +1,5 @@
 <?php
+
 namespace BeatSwitch\Lock\Drivers;
 
 use BeatSwitch\Lock\Callers\Caller;
@@ -16,6 +17,7 @@ abstract class ReadOnlyDriver implements Driver
      *
      * @param \BeatSwitch\Lock\Callers\Caller $caller
      * @param \BeatSwitch\Lock\Permissions\Permission
+     *
      * @return void
      */
     final public function storeCallerPermission(Caller $caller, Permission $permission)
@@ -27,6 +29,7 @@ abstract class ReadOnlyDriver implements Driver
      *
      * @param \BeatSwitch\Lock\Callers\Caller $caller
      * @param \BeatSwitch\Lock\Permissions\Permission
+     *
      * @return void
      */
     final public function removeCallerPermission(Caller $caller, Permission $permission)
@@ -38,6 +41,7 @@ abstract class ReadOnlyDriver implements Driver
      *
      * @param \BeatSwitch\Lock\Roles\Role $role
      * @param \BeatSwitch\Lock\Permissions\Permission
+     *
      * @return void
      */
     final public function storeRolePermission(Role $role, Permission $permission)
@@ -49,6 +53,7 @@ abstract class ReadOnlyDriver implements Driver
      *
      * @param \BeatSwitch\Lock\Roles\Role $role
      * @param \BeatSwitch\Lock\Permissions\Permission
+     *
      * @return void
      */
     final public function removeRolePermission(Role $role, Permission $permission)

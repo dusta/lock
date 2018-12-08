@@ -1,4 +1,5 @@
 <?php
+
 namespace BeatSwitch\Lock\Callers;
 
 use BeatSwitch\Lock\Lock;
@@ -15,7 +16,7 @@ class CallerLock extends Lock
 
     /**
      * @param \BeatSwitch\Lock\Callers\Caller $caller
-     * @param \BeatSwitch\Lock\Manager $manager
+     * @param \BeatSwitch\Lock\Manager        $manager
      */
     public function __construct(Caller $caller, Manager $manager)
     {
@@ -24,10 +25,29 @@ class CallerLock extends Lock
     }
 
     /**
+     * @return \BeatSwitch\Lock\Callers\Caller
+     */
+    public function getSubject()
+    {
+        return $this->getCaller();
+    }
+
+    /**
+     * The current caller for this Lock object
+     *
+     * @return \BeatSwitch\Lock\Callers\Caller
+     */
+    public function getCaller()
+    {
+        return $this->caller;
+    }
+
+    /**
      * Determine if an action is allowed
      *
-     * @param string $action
+     * @param string                              $action
      * @param \BeatSwitch\Lock\Resources\Resource $resource
+     *
      * @return bool
      */
     protected function resolvePermissions($action, Resource $resource)
@@ -36,7 +56,7 @@ class CallerLock extends Lock
 
         // Search for restrictions in the permissions. We'll do this first
         // because restrictions should override any privileges.
-        if (! $this->resolveRestrictions($permissions, $action, $resource)) {
+        if (!$this->resolveRestrictions($permissions, $action, $resource)) {
             return false;
         }
 
@@ -62,40 +82,6 @@ class CallerLock extends Lock
     }
 
     /**
-     * Stores a permission into the driver
-     *
-     * @param \BeatSwitch\Lock\Permissions\Permission $permission
-     */
-    protected function storePermission(Permission $permission)
-    {
-        // Don't re-store the permission if it already exists.
-        if (! $this->hasPermission($permission)) {
-            $this->getDriver()->storeCallerPermission($this->caller, $permission);
-        }
-    }
-
-    /**
-     * Removes a permission from the driver
-     *
-     * @param \BeatSwitch\Lock\Permissions\Permission $permission
-     */
-    protected function removePermission(Permission $permission)
-    {
-        $this->getDriver()->removeCallerPermission($this->caller, $permission);
-    }
-
-    /**
-     * Checks if a caller has a specific permission
-     *
-     * @param \BeatSwitch\Lock\Permissions\Permission $permission
-     * @return bool
-     */
-    protected function hasPermission(Permission $permission)
-    {
-        return $this->getDriver()->hasCallerPermission($this->caller, $permission);
-    }
-
-    /**
      * Get all the lock instances for all the roles of the current caller
      *
      * @return \BeatSwitch\Lock\Roles\RoleLock[]
@@ -108,20 +94,37 @@ class CallerLock extends Lock
     }
 
     /**
-     * @return \BeatSwitch\Lock\Callers\Caller
+     * Stores a permission into the driver
+     *
+     * @param \BeatSwitch\Lock\Permissions\Permission $permission
      */
-    public function getSubject()
+    protected function storePermission(Permission $permission)
     {
-        return $this->getCaller();
+        // Don't re-store the permission if it already exists.
+        if (!$this->hasPermission($permission)) {
+            $this->getDriver()->storeCallerPermission($this->caller, $permission);
+        }
     }
 
     /**
-     * The current caller for this Lock object
+     * Checks if a caller has a specific permission
      *
-     * @return \BeatSwitch\Lock\Callers\Caller
+     * @param \BeatSwitch\Lock\Permissions\Permission $permission
+     *
+     * @return bool
      */
-    public function getCaller()
+    protected function hasPermission(Permission $permission)
     {
-        return $this->caller;
+        return $this->getDriver()->hasCallerPermission($this->caller, $permission);
+    }
+
+    /**
+     * Removes a permission from the driver
+     *
+     * @param \BeatSwitch\Lock\Permissions\Permission $permission
+     */
+    protected function removePermission(Permission $permission)
+    {
+        $this->getDriver()->removeCallerPermission($this->caller, $permission);
     }
 }

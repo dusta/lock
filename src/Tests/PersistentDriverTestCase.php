@@ -1,4 +1,5 @@
 <?php
+
 namespace BeatSwitch\Lock\Tests;
 
 use BeatSwitch\Lock\Callers\SimpleCaller;
@@ -49,15 +50,6 @@ abstract class PersistentDriverTestCase extends \PHPUnit_Framework_TestCase
     protected function getCallerLock()
     {
         return $this->manager->caller($this->caller);
-    }
-
-    /**
-     * @param \BeatSwitch\Lock\Roles\Role|string $role
-     * @return \BeatSwitch\Lock\Roles\RoleLock
-     */
-    protected function getRoleLock($role)
-    {
-        return $this->manager->role($role);
     }
 
     /** @test */
@@ -285,6 +277,16 @@ abstract class PersistentDriverTestCase extends \PHPUnit_Framework_TestCase
 
         // Other callers stay unaffected.
         $this->assertTrue($roleLock->can('manage-users'));
+    }
+
+    /**
+     * @param \BeatSwitch\Lock\Roles\Role|string $role
+     *
+     * @return \BeatSwitch\Lock\Roles\RoleLock
+     */
+    protected function getRoleLock($role)
+    {
+        return $this->manager->role($role);
     }
 
     /** @todo */

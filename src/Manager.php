@@ -1,4 +1,5 @@
 <?php
+
 namespace BeatSwitch\Lock;
 
 use BeatSwitch\Lock\Callers\Caller;
@@ -32,31 +33,10 @@ class Manager
     }
 
     /**
-     * Creates a new Lock instance for the given caller
-     *
-     * @param \BeatSwitch\Lock\Callers\Caller $caller
-     * @return \BeatSwitch\Lock\Callers\CallerLock
-     */
-    public function caller(Caller $caller)
-    {
-        return LockFactory::makeCallerLock($caller, $this);
-    }
-
-    /**
-     * Creates a new Lock instance for the given role
-     *
-     * @param \BeatSwitch\Lock\Roles\Role|string $role
-     * @return \BeatSwitch\Lock\Roles\RoleLock
-     */
-    public function role($role)
-    {
-        return LockFactory::makeRoleLock($this->convertRoleToObject($role), $this);
-    }
-
-    /**
      * Sets the lock instance on caller that implements the LockAware trait
      *
      * @param \BeatSwitch\Lock\Callers\Caller $caller
+     *
      * @return \BeatSwitch\Lock\Callers\Caller
      */
     public function makeCallerLockAware(Caller $caller)
@@ -69,9 +49,22 @@ class Manager
     }
 
     /**
+     * Creates a new Lock instance for the given caller
+     *
+     * @param \BeatSwitch\Lock\Callers\Caller $caller
+     *
+     * @return \BeatSwitch\Lock\Callers\CallerLock
+     */
+    public function caller(Caller $caller)
+    {
+        return LockFactory::makeCallerLock($caller, $this);
+    }
+
+    /**
      * Sets the lock instance on role that implements the LockAware trait
      *
      * @param \BeatSwitch\Lock\Roles\Role|string $role
+     *
      * @return \BeatSwitch\Lock\Roles\Role
      */
     public function makeRoleLockAware($role)
@@ -85,44 +78,22 @@ class Manager
     }
 
     /**
-     * Register an alias to group certain actions
-     *
-     * @param string $name
-     * @param string|array $actions
-     */
-    public function alias($name, $actions)
-    {
-        $this->aliases[$name] = new ActionAlias($name, $actions);
-    }
-
-    /**
-     * Add one role to the lock instance
-     *
-     * @param string|array $names
-     * @param string $inherit
-     */
-    public function setRole($names, $inherit = null)
-    {
-        foreach ((array) $names as $name) {
-            $this->roles[$name] = new SimpleRole($name, $inherit);
-        }
-    }
-
-    /**
      * Create a role value object if a non role object is passed
      *
      * @param string|\BeatSwitch\Lock\Roles\Role $role
+     *
      * @return \BeatSwitch\Lock\Roles\Role
      */
     public function convertRoleToObject($role)
     {
-        return ! $role instanceof Role ? $this->findRole($role) : $role;
+        return !$role instanceof Role ? $this->findRole($role) : $role;
     }
 
     /**
      * Find a role in the roles array
      *
      * @param string $role
+     *
      * @return \BeatSwitch\Lock\Roles\Role
      */
     protected function findRole($role)
@@ -136,6 +107,42 @@ class Manager
         // If we couldn't find a registered role for the
         // given key, just return a new role object.
         return new SimpleRole($role);
+    }
+
+    /**
+     * Creates a new Lock instance for the given role
+     *
+     * @param \BeatSwitch\Lock\Roles\Role|string $role
+     *
+     * @return \BeatSwitch\Lock\Roles\RoleLock
+     */
+    public function role($role)
+    {
+        return LockFactory::makeRoleLock($this->convertRoleToObject($role), $this);
+    }
+
+    /**
+     * Register an alias to group certain actions
+     *
+     * @param string       $name
+     * @param string|array $actions
+     */
+    public function alias($name, $actions)
+    {
+        $this->aliases[$name] = new ActionAlias($name, $actions);
+    }
+
+    /**
+     * Add one role to the lock instance
+     *
+     * @param string|array $names
+     * @param string       $inherit
+     */
+    public function setRole($names, $inherit = null)
+    {
+        foreach ((array)$names as $name) {
+            $this->roles[$name] = new SimpleRole($name, $inherit);
+        }
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 namespace BeatSwitch\Lock;
 
 /**
@@ -18,9 +19,10 @@ trait LockAware
     /**
      * Determine if one or more actions are allowed
      *
-     * @param string|array $action
+     * @param string|array                               $action
      * @param string|\BeatSwitch\Lock\Resources\Resource $resource
-     * @param int $resourceId
+     * @param int                                        $resourceId
+     *
      * @return bool
      */
     public function can($action, $resource = null, $resourceId = null)
@@ -31,11 +33,26 @@ trait LockAware
     }
 
     /**
+     * Makes sure that a valid lock instance is set before an api method is called
+     *
+     * @throws \BeatSwitch\Lock\LockInstanceNotSet
+     */
+    private function assertLockInstanceIsSet()
+    {
+        if (!$this->lock instanceof Lock) {
+            throw new LockInstanceNotSet(
+                'Please set a valid lock instance on this class before attempting to use it.'
+            );
+        }
+    }
+
+    /**
      * Determine if an action isn't allowed
      *
-     * @param string|array $action
+     * @param string|array                               $action
      * @param string|\BeatSwitch\Lock\Resources\Resource $resource
-     * @param int $resourceId
+     * @param int                                        $resourceId
+     *
      * @return bool
      */
     public function cannot($action, $resource = null, $resourceId = null)
@@ -48,9 +65,9 @@ trait LockAware
     /**
      * Give a caller permission to do something
      *
-     * @param string|array $action
-     * @param string|\BeatSwitch\Lock\Resources\Resource $resource
-     * @param int $resourceId
+     * @param string|array                                                                             $action
+     * @param string|\BeatSwitch\Lock\Resources\Resource                                               $resource
+     * @param int                                                                                      $resourceId
      * @param \BeatSwitch\Lock\Permissions\Condition|\BeatSwitch\Lock\Permissions\Condition[]|\Closure $conditions
      */
     public function allow($action, $resource = null, $resourceId = null, $conditions = [])
@@ -63,9 +80,9 @@ trait LockAware
     /**
      * Deny a caller from doing something
      *
-     * @param string|array $action
-     * @param string|\BeatSwitch\Lock\Resources\Resource $resource
-     * @param int $resourceId
+     * @param string|array                                                                             $action
+     * @param string|\BeatSwitch\Lock\Resources\Resource                                               $resource
+     * @param int                                                                                      $resourceId
      * @param \BeatSwitch\Lock\Permissions\Condition|\BeatSwitch\Lock\Permissions\Condition[]|\Closure $conditions
      */
     public function deny($action, $resource = null, $resourceId = null, $conditions = [])
@@ -78,9 +95,9 @@ trait LockAware
     /**
      * Change the value for a permission
      *
-     * @param string|array $action
+     * @param string|array                               $action
      * @param string|\BeatSwitch\Lock\Resources\Resource $resource
-     * @param int $resourceId
+     * @param int                                        $resourceId
      */
     public function toggle($action, $resource = null, $resourceId = null)
     {
@@ -92,8 +109,9 @@ trait LockAware
     /**
      * Returns the allowed ids which match the given action and resource type
      *
-     * @param string|array $action
+     * @param string|array                               $action
      * @param string|\BeatSwitch\Lock\Resources\Resource $resourceType
+     *
      * @return array
      */
     public function allowed($action, $resourceType)
@@ -106,8 +124,9 @@ trait LockAware
     /**
      * Returns the denied ids which match the given action and resource type
      *
-     * @param string|array $action
+     * @param string|array                               $action
      * @param string|\BeatSwitch\Lock\Resources\Resource $resourceType
+     *
      * @return array
      */
     public function denied($action, $resourceType)
@@ -120,9 +139,9 @@ trait LockAware
     /**
      * Clear a given permission on a subject
      *
-     * @param string|array $action
+     * @param string|array                               $action
      * @param string|\BeatSwitch\Lock\Resources\Resource $resource
-     * @param int $resourceId
+     * @param int                                        $resourceId
      */
     public function clear($action, $resource = null, $resourceId = null)
     {
@@ -135,6 +154,7 @@ trait LockAware
      * Sets the lock instance for this caller
      *
      * @param \BeatSwitch\Lock\Lock $lock
+     *
      * @throws \BeatSwitch\Lock\InvalidLockInstance
      */
     public function setLock(Lock $lock)
@@ -145,19 +165,5 @@ trait LockAware
         }
 
         $this->lock = $lock;
-    }
-
-    /**
-     * Makes sure that a valid lock instance is set before an api method is called
-     *
-     * @throws \BeatSwitch\Lock\LockInstanceNotSet
-     */
-    private function assertLockInstanceIsSet()
-    {
-        if (! $this->lock instanceof Lock) {
-            throw new LockInstanceNotSet(
-                'Please set a valid lock instance on this class before attempting to use it.'
-            );
-        }
     }
 }

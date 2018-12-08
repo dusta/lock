@@ -1,4 +1,5 @@
 <?php
+
 namespace BeatSwitch\Lock;
 
 class ActionAlias
@@ -18,19 +19,20 @@ class ActionAlias
     protected $actions;
 
     /**
-     * @param string $name
+     * @param string       $name
      * @param string|array $actions
      */
     public function __construct($name, $actions)
     {
         $this->name = $name;
-        $this->actions = (array) $actions;
+        $this->actions = (array)$actions;
     }
 
     /**
      * Determine if the given action is registered to this alias
      *
      * @param string $action
+     *
      * @return bool
      */
     public function hasAction($action)

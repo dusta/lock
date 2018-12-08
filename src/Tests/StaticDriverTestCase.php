@@ -1,4 +1,5 @@
 <?php
+
 namespace BeatSwitch\Lock\Tests;
 
 use stubs\BeatSwitch\Lock\FalseConditionStub;

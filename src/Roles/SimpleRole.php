@@ -1,4 +1,5 @@
 <?php
+
 namespace BeatSwitch\Lock\Roles;
 
 use BeatSwitch\Lock\LockAware;

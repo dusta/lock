@@ -1,11 +1,12 @@
 <?php
+
 namespace BeatSwitch\Lock;
 
 use BeatSwitch\Lock\Permissions\Permission;
-use BeatSwitch\Lock\Resources\Resource;
-use BeatSwitch\Lock\Resources\SimpleResource;
 use BeatSwitch\Lock\Permissions\Privilege;
 use BeatSwitch\Lock\Permissions\Restriction;
+use BeatSwitch\Lock\Resources\Resource;
+use BeatSwitch\Lock\Resources\SimpleResource;
 
 abstract class Lock
 {
@@ -15,16 +16,33 @@ abstract class Lock
     protected $manager;
 
     /**
+     * Change the value for a permission
+     *
+     * @param string|array                               $action
+     * @param string|\BeatSwitch\Lock\Resources\Resource $resource
+     * @param int                                        $resourceId
+     */
+    public function toggle($action, $resource = null, $resourceId = null)
+    {
+        if ($this->can($action, $resource, $resourceId)) {
+            $this->deny($action, $resource, $resourceId);
+        } else {
+            $this->allow($action, $resource, $resourceId);
+        }
+    }
+
+    /**
      * Determine if one or more actions are allowed
      *
-     * @param string|array $action
+     * @param string|array                               $action
      * @param string|\BeatSwitch\Lock\Resources\Resource $resource
-     * @param int $resourceId
+     * @param int                                        $resourceId
+     *
      * @return bool
      */
     public function can($action, $resource = null, $resourceId = null)
     {
-        $actions = (array) $action;
+        $actions = (array)$action;
         $resource = $this->convertResourceToObject($resource, $resourceId);
         $permissions = $this->getPermissions();
 
@@ -35,7 +53,7 @@ abstract class Lock
                 }
             }
 
-            if (! $this->resolvePermissions($action, $resource)) {
+            if (!$this->resolvePermissions($action, $resource)) {
                 return false;
             }
         }
@@ -44,35 +62,158 @@ abstract class Lock
     }
 
     /**
-     * Determine if an action isn't allowed
+     * Create a resource value object if a non resource object is passed
      *
-     * @param string|array $action
-     * @param string|\BeatSwitch\Lock\Resources\Resource $resource
-     * @param int $resourceId
+     * @param string|\BeatSwitch\Lock\Resources\Resource|null $resource
+     * @param int|null                                        $resourceId
+     *
+     * @return \BeatSwitch\Lock\Resources\Resource
+     */
+    protected function convertResourceToObject($resource, $resourceId = null)
+    {
+        return !$resource instanceof Resource ? new SimpleResource($resource, $resourceId) : $resource;
+    }
+
+    /**
+     * Returns the permissions for the current subject
+     *
+     * @return \BeatSwitch\Lock\Permissions\Permission[]
+     */
+    abstract public function getPermissions();
+
+    /**
+     * Returns all aliases which contain the given action
+     *
+     * @param string $action
+     *
+     * @return array
+     */
+    protected function getAliasesForAction($action)
+    {
+        $actions = [];
+
+        foreach ($this->manager->getAliases() as $aliasName => $alias) {
+            if ($alias->hasAction($action)) {
+                $actions[] = $aliasName;
+            }
+        }
+
+        return $actions;
+    }
+
+    /**
+     * Check if the given restrictions prevent the given action and resource to pass
+     *
+     * @param \BeatSwitch\Lock\Permissions\Permission[] $permissions
+     * @param string                                    $action
+     * @param \BeatSwitch\Lock\Resources\Resource       $resource
+     *
      * @return bool
      */
-    public function cannot($action, $resource = null, $resourceId = null)
+    protected function resolveRestrictions($permissions, $action, Resource $resource)
     {
-        return ! $this->can($action, $resource, $resourceId);
+        foreach ($permissions as $permission) {
+            // If we've found a matching restriction, return false.
+            if ($permission instanceof Restriction && !$permission->isAllowed($this, $action, $resource)) {
+                return false;
+            }
+        }
+
+        return true;
     }
+
+    /**
+     * Determine if an action is allowed
+     *
+     * @param string                              $action
+     * @param \BeatSwitch\Lock\Resources\Resource $resource
+     *
+     * @return bool
+     */
+    abstract protected function resolvePermissions($action, Resource $resource);
+
+    /**
+     * Deny the subject from doing something
+     *
+     * @param string|array                                                                             $action
+     * @param string|\BeatSwitch\Lock\Resources\Resource                                               $resource
+     * @param int                                                                                      $resourceId
+     * @param \BeatSwitch\Lock\Permissions\Condition|\BeatSwitch\Lock\Permissions\Condition[]|\Closure $conditions
+     */
+    public function deny($action, $resource = null, $resourceId = null, $conditions = [])
+    {
+        $actions = (array)$action;
+        $resource = $this->convertResourceToObject($resource, $resourceId);
+        $permissions = $this->getPermissions();
+
+        foreach ($actions as $action) {
+            $this->clearPermission($action, $resource, $permissions);
+
+            $this->storePermission(new Restriction($action, $resource, $conditions));
+        }
+    }
+
+    /**
+     * @param string                                    $action
+     * @param \BeatSwitch\Lock\Resources\Resource       $resource
+     * @param \BeatSwitch\Lock\Permissions\Permission[] $permissions
+     */
+    private function clearPermission($action, Resource $resource, array $permissions)
+    {
+        foreach ($permissions as $key => $permission) {
+            if ($permission instanceof Privilege && $permission->isAllowed($this, $action, $resource)) {
+                $this->removePermission($permission);
+                unset($permissions[$key]);
+            }
+        }
+
+        $privilege = new Privilege($action, $resource);
+
+        if ($this->hasPermission($privilege)) {
+            $this->removePermission($privilege);
+        }
+    }
+
+    /**
+     * Removes a permission from the driver
+     *
+     * @param \BeatSwitch\Lock\Permissions\Permission $permission
+     */
+    abstract protected function removePermission(Permission $permission);
+
+    /**
+     * Checks if the subject has a specific permission
+     *
+     * @param \BeatSwitch\Lock\Permissions\Permission $permission
+     *
+     * @return bool
+     */
+    abstract protected function hasPermission(Permission $permission);
+
+    /**
+     * Stores a permission into the driver
+     *
+     * @param \BeatSwitch\Lock\Permissions\Permission $permission
+     */
+    abstract protected function storePermission(Permission $permission);
 
     /**
      * Give the subject permission to do something
      *
-     * @param string|array $action
-     * @param string|\BeatSwitch\Lock\Resources\Resource $resource
-     * @param int $resourceId
+     * @param string|array                                                                             $action
+     * @param string|\BeatSwitch\Lock\Resources\Resource                                               $resource
+     * @param int                                                                                      $resourceId
      * @param \BeatSwitch\Lock\Permissions\Condition|\BeatSwitch\Lock\Permissions\Condition[]|\Closure $conditions
      */
     public function allow($action, $resource = null, $resourceId = null, $conditions = [])
     {
-        $actions = (array) $action;
+        $actions = (array)$action;
         $resource = $this->convertResourceToObject($resource, $resourceId);
         $permissions = $this->getPermissions();
 
         foreach ($actions as $action) {
             foreach ($permissions as $key => $permission) {
-                if ($permission instanceof Restriction && ! $permission->isAllowed($this, $action, $resource)) {
+                if ($permission instanceof Restriction && !$permission->isAllowed($this, $action, $resource)) {
                     $this->removePermission($permission);
                     unset($permissions[$key]);
                 }
@@ -87,52 +228,16 @@ abstract class Lock
 
             $this->storePermission(new Privilege($action, $resource, $conditions));
         }
-        
+
         return $this;
-    }
-
-    /**
-     * Deny the subject from doing something
-     *
-     * @param string|array $action
-     * @param string|\BeatSwitch\Lock\Resources\Resource $resource
-     * @param int $resourceId
-     * @param \BeatSwitch\Lock\Permissions\Condition|\BeatSwitch\Lock\Permissions\Condition[]|\Closure $conditions
-     */
-    public function deny($action, $resource = null, $resourceId = null, $conditions = [])
-    {
-        $actions = (array) $action;
-        $resource = $this->convertResourceToObject($resource, $resourceId);
-        $permissions = $this->getPermissions();
-
-        foreach ($actions as $action) {
-            $this->clearPermission($action, $resource, $permissions);
-
-            $this->storePermission(new Restriction($action, $resource, $conditions));
-        }
-    }
-
-    /**
-     * Change the value for a permission
-     *
-     * @param string|array $action
-     * @param string|\BeatSwitch\Lock\Resources\Resource $resource
-     * @param int $resourceId
-     */
-    public function toggle($action, $resource = null, $resourceId = null)
-    {
-        if ($this->can($action, $resource, $resourceId)) {
-            $this->deny($action, $resource, $resourceId);
-        } else {
-            $this->allow($action, $resource, $resourceId);
-        }
     }
 
     /**
      * Returns the allowed ids which match the given action and resource type
      *
-     * @param string|array $action
+     * @param string|array                               $action
      * @param string|\BeatSwitch\Lock\Resources\Resource $resourceType
+     *
      * @return array
      */
     public function allowed($action, $resourceType)
@@ -154,8 +259,9 @@ abstract class Lock
     /**
      * Returns the denied ids which match the given action and resource type
      *
-     * @param string|array $action
+     * @param string|array                               $action
      * @param string|\BeatSwitch\Lock\Resources\Resource $resourceType
+     *
      * @return array
      */
     public function denied($action, $resourceType)
@@ -175,15 +281,29 @@ abstract class Lock
     }
 
     /**
+     * Determine if an action isn't allowed
+     *
+     * @param string|array                               $action
+     * @param string|\BeatSwitch\Lock\Resources\Resource $resource
+     * @param int                                        $resourceId
+     *
+     * @return bool
+     */
+    public function cannot($action, $resource = null, $resourceId = null)
+    {
+        return !$this->can($action, $resource, $resourceId);
+    }
+
+    /**
      * Clear a given permission on a subject
      *
-     * @param string|array $action
+     * @param string|array                               $action
      * @param string|\BeatSwitch\Lock\Resources\Resource $resource
-     * @param int $resourceId
+     * @param int                                        $resourceId
      */
     public function clear($action = null, $resource = null, $resourceId = null)
     {
-        $actions = (array) $action;
+        $actions = (array)$action;
         $resourceObject = $this->convertResourceToObject($resource, $resourceId);
         $permissions = $this->getPermissions();
 
@@ -201,137 +321,6 @@ abstract class Lock
                 $this->clearPermission($action, $resourceObject, $permissions);
             }
         }
-    }
-
-    /**
-     * @param string $action
-     * @param \BeatSwitch\Lock\Resources\Resource $resource
-     * @param \BeatSwitch\Lock\Permissions\Permission[] $permissions
-     */
-    private function clearPermission($action, Resource $resource, array $permissions)
-    {
-        foreach ($permissions as $key => $permission) {
-            if ($permission instanceof Privilege && $permission->isAllowed($this, $action, $resource)) {
-                $this->removePermission($permission);
-                unset($permissions[$key]);
-            }
-        }
-
-        $privilege = new Privilege($action, $resource);
-
-        if ($this->hasPermission($privilege)) {
-            $this->removePermission($privilege);
-        }
-    }
-
-    /**
-     * Determine if an action is allowed
-     *
-     * @param string $action
-     * @param \BeatSwitch\Lock\Resources\Resource $resource
-     * @return bool
-     */
-    abstract protected function resolvePermissions($action, Resource $resource);
-
-    /**
-     * Check if the given restrictions prevent the given action and resource to pass
-     *
-     * @param \BeatSwitch\Lock\Permissions\Permission[] $permissions
-     * @param string $action
-     * @param \BeatSwitch\Lock\Resources\Resource $resource
-     * @return bool
-     */
-    protected function resolveRestrictions($permissions, $action, Resource $resource)
-    {
-        foreach ($permissions as $permission) {
-            // If we've found a matching restriction, return false.
-            if ($permission instanceof Restriction && ! $permission->isAllowed($this, $action, $resource)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Check if the given privileges allow the given action and resource to pass
-     *
-     * @param \BeatSwitch\Lock\Permissions\Permission[] $permissions
-     * @param string $action
-     * @param \BeatSwitch\Lock\Resources\Resource $resource
-     * @return bool
-     */
-    protected function resolvePrivileges($permissions, $action, Resource $resource)
-    {
-        // Search for privileges in the permissions.
-        foreach ($permissions as $permission) {
-            // If we've found a valid privilege, return true.
-            if ($permission instanceof Privilege && $permission->isAllowed($this, $action, $resource)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns the permissions for the current subject
-     *
-     * @return \BeatSwitch\Lock\Permissions\Permission[]
-     */
-    abstract public function getPermissions();
-
-    /**
-     * Stores a permission into the driver
-     *
-     * @param \BeatSwitch\Lock\Permissions\Permission $permission
-     */
-    abstract protected function storePermission(Permission $permission);
-
-    /**
-     * Removes a permission from the driver
-     *
-     * @param \BeatSwitch\Lock\Permissions\Permission $permission
-     */
-    abstract protected function removePermission(Permission $permission);
-
-    /**
-     * Checks if the subject has a specific permission
-     *
-     * @param \BeatSwitch\Lock\Permissions\Permission $permission
-     * @return bool
-     */
-    abstract protected function hasPermission(Permission $permission);
-
-    /**
-     * Returns all aliases which contain the given action
-     *
-     * @param string $action
-     * @return array
-     */
-    protected function getAliasesForAction($action)
-    {
-        $actions = [];
-
-        foreach ($this->manager->getAliases() as $aliasName => $alias) {
-            if ($alias->hasAction($action)) {
-                $actions[] = $aliasName;
-            }
-        }
-
-        return $actions;
-    }
-
-    /**
-     * Create a resource value object if a non resource object is passed
-     *
-     * @param string|\BeatSwitch\Lock\Resources\Resource|null $resource
-     * @param int|null $resourceId
-     * @return \BeatSwitch\Lock\Resources\Resource
-     */
-    protected function convertResourceToObject($resource, $resourceId = null)
-    {
-        return ! $resource instanceof Resource ? new SimpleResource($resource, $resourceId) : $resource;
     }
 
     /**
@@ -359,5 +348,27 @@ abstract class Lock
     public function getDriver()
     {
         return $this->manager->getDriver();
+    }
+
+    /**
+     * Check if the given privileges allow the given action and resource to pass
+     *
+     * @param \BeatSwitch\Lock\Permissions\Permission[] $permissions
+     * @param string                                    $action
+     * @param \BeatSwitch\Lock\Resources\Resource       $resource
+     *
+     * @return bool
+     */
+    protected function resolvePrivileges($permissions, $action, Resource $resource)
+    {
+        // Search for privileges in the permissions.
+        foreach ($permissions as $permission) {
+            // If we've found a valid privilege, return true.
+            if ($permission instanceof Privilege && $permission->isAllowed($this, $action, $resource)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

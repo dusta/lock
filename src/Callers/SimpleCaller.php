@@ -1,4 +1,5 @@
 <?php
+
 namespace BeatSwitch\Lock\Callers;
 
 use BeatSwitch\Lock\LockAware;
@@ -24,8 +25,8 @@ final class SimpleCaller implements Caller
 
     /**
      * @param string $type
-     * @param int $id
-     * @param array $roles
+     * @param int    $id
+     * @param array  $roles
      */
     public function __construct($type, $id, array $roles = [])
     {

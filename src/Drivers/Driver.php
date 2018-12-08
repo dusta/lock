@@ -1,4 +1,5 @@
 <?php
+
 namespace BeatSwitch\Lock\Drivers;
 
 use BeatSwitch\Lock\Callers\Caller;
@@ -17,6 +18,7 @@ interface Driver
      * Returns all the permissions for a caller
      *
      * @param \BeatSwitch\Lock\Callers\Caller $caller
+     *
      * @return \BeatSwitch\Lock\Permissions\Permission[]
      */
     public function getCallerPermissions(Caller $caller);
@@ -26,6 +28,7 @@ interface Driver
      *
      * @param \BeatSwitch\Lock\Callers\Caller $caller
      * @param \BeatSwitch\Lock\Permissions\Permission
+     *
      * @return void
      */
     public function storeCallerPermission(Caller $caller, Permission $permission);
@@ -35,6 +38,7 @@ interface Driver
      *
      * @param \BeatSwitch\Lock\Callers\Caller $caller
      * @param \BeatSwitch\Lock\Permissions\Permission
+     *
      * @return void
      */
     public function removeCallerPermission(Caller $caller, Permission $permission);
@@ -44,6 +48,7 @@ interface Driver
      *
      * @param \BeatSwitch\Lock\Callers\Caller $caller
      * @param \BeatSwitch\Lock\Permissions\Permission
+     *
      * @return bool
      */
     public function hasCallerPermission(Caller $caller, Permission $permission);
@@ -52,6 +57,7 @@ interface Driver
      * Returns all the permissions for a role
      *
      * @param \BeatSwitch\Lock\Roles\Role $role
+     *
      * @return \BeatSwitch\Lock\Permissions\Permission[]
      */
     public function getRolePermissions(Role $role);
@@ -61,6 +67,7 @@ interface Driver
      *
      * @param \BeatSwitch\Lock\Roles\Role $role
      * @param \BeatSwitch\Lock\Permissions\Permission
+     *
      * @return void
      */
     public function storeRolePermission(Role $role, Permission $permission);
@@ -70,6 +77,7 @@ interface Driver
      *
      * @param \BeatSwitch\Lock\Roles\Role $role
      * @param \BeatSwitch\Lock\Permissions\Permission
+     *
      * @return void
      */
     public function removeRolePermission(Role $role, Permission $permission);
@@ -79,6 +87,7 @@ interface Driver
      *
      * @param \BeatSwitch\Lock\Roles\Role $role
      * @param \BeatSwitch\Lock\Permissions\Permission
+     *
      * @return bool
      */
     public function hasRolePermission(Role $role, Permission $permission);
