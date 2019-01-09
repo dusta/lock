@@ -1,6 +1,6 @@
 # Contributing
 
-All contributions are welcome. If you want to ask or propose something please [create an issue](https://github.com/BeatSwitch/lock/issues/new). If you want to contribute please send in a pull request.
+All contributions are welcome. If you want to ask or propose something please [create an issue](https://github.com/dusta/lock/issues/new). If you want to contribute please send in a pull request.
 
 ## Pull Requests
 

@@ -1,11 +1,11 @@
 # Lock - Acl for PHP 5.6+
 
-[![Build Status](https://img.shields.io/travis/BeatSwitch/lock/master.svg?style=flat-square)](https://travis-ci.org/dusta/lock)
-[![Code Climate](https://codeclimate.com/github/BeatSwitch/lock/badges/gpa.svg)](https://codeclimate.com/github/BeatSwitch/lock)
-[![Test Coverage](https://codeclimate.com/github/BeatSwitch/lock/badges/coverage.svg)](https://codeclimate.com/github/BeatSwitch/lock/coverage)
+[![Build Status](https://img.shields.io/travis/dusta/lock/master.svg?style=flat-square)](https://travis-ci.org/dusta/lock)
+[![Code Climate](https://codeclimate.com/github/dusta/lock/badges/gpa.svg)](https://codeclimate.com/github/dusta/lock)
+[![Test Coverage](https://codeclimate.com/github/dusta/lock/badges/coverage.svg)](https://codeclimate.com/github/dusta/lock/coverage)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](license.md)
-[![Packagist Version](https://img.shields.io/packagist/v/beatswitch/lock.svg?style=flat-square)](https://packagist.org/packages/beatswitch/lock)
-[![Total Downloads](https://img.shields.io/packagist/dt/beatswitch/lock.svg?style=flat-square)](https://packagist.org/packages/beatswitch/lock)
+[![Packagist Version](https://img.shields.io/packagist/v/dusta/lock.svg?style=flat-square)](https://packagist.org/packages/dusta/lock)
+[![Total Downloads](https://img.shields.io/packagist/dt/dusta/lock.svg?style=flat-square)](https://packagist.org/packages/dusta/lock)
 
 <img width="100%" src="https://s3.eu-central-1.amazonaws.com/assets.beatswitch.com/lock_banner.png">
 
@@ -92,7 +92,7 @@ If you need a framework-specific implementation, pick one of the already prepare
 Install this package through Composer.
 
 ```bash
-$ composer require beatswitch/lock
+$ composer require dusta/lock
 ```
 
 ## Usage
@@ -894,7 +894,7 @@ And this is all you need! The `PersistentDriverTestCase` contains all the tests 
 > Lock is unmaintained at this moment.
 
 This package is currently maintained by [Dries Vints](https://github.com/driesvints).  
-If you have any questions please don't hesitate to [ask them in an issue](https://github.com/BeatSwitch/lock/issues/new).
+If you have any questions please don't hesitate to [ask them in an issue](https://github.com/dusta/lock/issues/new).
 
 ## Contributing
 
